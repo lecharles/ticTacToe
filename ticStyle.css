@@ -6,3 +6,7 @@ td {
     font-size: 150px;
     text-align: center;
 }
+
+td:hover {
+  background-color: yellow;
+}

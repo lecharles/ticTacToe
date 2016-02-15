@@ -7,32 +7,41 @@ function gameMatrix() {
   return matrix;
 }
 
-function checkSumLine(gameMatrix, line) {
+function getLineCoordinates(lineNumber) {
+  var lineArray = [];
+  for ( i = 0; i < 3; i++ ) {
+    lineArray[i] = [lineNumber, i];
+  } return lineArray;
+}
+
+function getColumnCoordinates(columnNumber) {
+  var columnArray = [];
+  for ( i = 0; i < 3; i++ ) {
+    columnArray[i] = [i, columnNumber]
+  } return columnArray;
+}
+
+function getDiagonalTopLCoordinates() {
+  var diagonalTopLArray = [];
+  for ( i = 0; i < 3; i++ ) {
+    diagonalTopLArray[i] = [i, i];
+  } return diagonalTopLArray;
+}
+
+function getDiagonalBottomLCoordinates() {
+  var diagonalBottomLArray = [];
+  for (i = 2, j = 0; j < 3 ; i--, j++) {
+    diagonalBottomLArray[i] = [i, j];
+  } return diagonalBottomLArray;
+}
+
+function checkSumCoordinates(gameMatrix, arrayOfCoordinates) {
   var sum = 0;
-  for (column = 0; column < 3 ; column++) {
-    sum = sum + gameMatrix[line][column];
+  for ( i = 0; i < 3; i++ ) {
+    var line = arrayOfCoordinates[i][0];
+    var col = arrayOfCoordinates[i][1];
+    sum = sum + gameMatrix[line][col];
   } return sum;
-}
-
-function checkSumColumn(gameMatrix, column){
-  var sum = 0;
-  for (line = 0; line < 3 ; line++) {
-    sum = sum + gameMatrix[line][column];
-  } return sum;
-}
-
-function checkSumDiagonalTopL(gameMatrix) {
-  var diagTopL = 0;
-  for (i = 0; i < 3 ; i++)
-  diagTopL = diagTopL + gameMatrix[i][i];
-  return diagTopL;
-}
-
-function checkSumDiagonalBottomL(gameMatrix) {
-  var diagBottomL = 0;
-  for (i = 2, j = 0; j < 3 ; i--, j++)
-  diagBottomL += gameMatrix[i][j];
-  return diagBottomL;
 }
 
 var game = gameMatrix();
@@ -63,48 +72,41 @@ $(document).on('ready', function() {
       game[line][col] = 1;
     }
 
-  move++;
+    move++;
 
-  for ( i = 0; i < 3; i++ ) {
-    var line = checkSumLine(game,i);
-    checkWinner(line);
-    // if ( line === 0 || line === 3 ) {
-    //   alert ('We Have A Winner! *by checkSumLine*');
-    //   $('td').off('click')
-    // }
-  }
+    function checkWinner(coordinates) {
+      var checkSum = checkSumCoordinates(game, coordinates);
+      // console.log(checkSum);
 
-  for ( i = 0; i < 3; i++ ) {
-    var col = checkSumColumn(game,i);
-    checkWinner(col);
-    // if ( col === 0 || col === 3 ) {
-    //   alert ('We Have A Winner! *by checkSumColumn*');
-    //   $('td').off('click')
-    // }
-  }
+      if ( checkSum === 0 || checkSum === 3 ) {
 
-  var diagTop = checkSumDiagonalTopL(game)
-  checkWinner(diagTop);
-  // if ( diagTop === 0 || diagTop === 3 ) {
-  //   alert ('We Have A Winner! *by checkSumDiagonalTopL*');
-  //   $('td').off('click')
-  // }
+        coordinates.forEach(function(cell){
+          var cellName = '#cell' + cell[0] + cell[1];
+          $(cellName).css('background-color', 'green');
+        });
 
-  var diagBottom = checkSumDiagonalBottomL(game)
-  checkWinner(diagBottom);
-  // if ( diagBottom === 0 || diagBottom === 3 ) {
-  //   alert ('We Have A Winner! *by checkSumDiagonalBottomL*');
-  //   $('td').off('click')
-  // }
+        alert('WE HAVE A WINNER!');
 
-  function checkWinner (checkSum) {
-    if ( checkSum === 0 || checkSum === 3 ) {
-      alert ('WE HAVE A WINNER!');
-      $('td').off('click')
+        $('td').off('click')
+      }
     }
-  }
 
-  self.off('click');
+    for ( var i = 0; i < 3; i++ ) {
+      var coordinate = getLineCoordinates(i);
+      // console.log('line:' + i);
+      checkWinner(coordinate);
+    }
+
+    for ( var i = 0; i < 3; i++ ) {
+      var coordinate = getColumnCoordinates(i);
+      checkWinner(coordinate);
+    }
+
+    checkWinner(getDiagonalTopLCoordinates());
+
+    checkWinner(getDiagonalBottomLCoordinates());
+
+    self.off('click');
   });
 })
 
