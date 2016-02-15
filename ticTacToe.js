@@ -46,12 +46,11 @@ function checkSumCoordinates(gameMatrix, arrayOfCoordinates) {
 
 var game = gameMatrix();
 
-function columnOfId(id) {
-  return parseInt(id.charAt(5));
-}
-
 function lineOfId(id) {
   return parseInt(id.charAt(4));
+}
+function columnOfId(id) {
+  return parseInt(id.charAt(5));
 }
 
 $(document).on('ready', function() {
@@ -78,15 +77,14 @@ $(document).on('ready', function() {
       var checkSum = checkSumCoordinates(game, coordinates);
       // console.log(checkSum);
 
+      function cellsToGreen(coordinates){
+        var cellName = '#cell' + coordinates[0] + coordinates[1];
+        $(cellName).css('background-color', 'green');
+      }
+
       if ( checkSum === 0 || checkSum === 3 ) {
-
-        coordinates.forEach(function(cell){
-          var cellName = '#cell' + cell[0] + cell[1];
-          $(cellName).css('background-color', 'green');
-        });
-
+        coordinates.forEach(cellsToGreen);
         alert('WE HAVE A WINNER!');
-
         $('td').off('click')
       }
     }
