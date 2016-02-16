@@ -1,4 +1,4 @@
-// gameMatrix[line][column]
+// gameMatrix[line][col] gives you the "value" of 'that' or a move.
 function gameMatrix() {
   matrix = [];
   for (i = 0; i < 3 ; i++) {
@@ -35,7 +35,8 @@ function getDiagonalBottomLCoordinates() {
   } return diagonalBottomLArray;
 }
 
-function checkSumCoordinates(gameMatrix, arrayOfCoordinates) {
+//arrayOfCoordinates will be a "lineArray", "columnArray", or "diagonalArray"
+function calculateSumCoordinates(gameMatrix, arrayOfCoordinates) {
   var sum = 0;
   for ( i = 0; i < 3; i++ ) {
     var line = arrayOfCoordinates[i][0];
@@ -44,14 +45,15 @@ function checkSumCoordinates(gameMatrix, arrayOfCoordinates) {
   } return sum;
 }
 
-var game = gameMatrix();
-
+//will use these functions to get 'x' & 'y' numbers from <td id='cellxy'> on move
 function lineOfId(id) {
   return parseInt(id.charAt(4));
 }
-function columnOfId(id) {
+function colOfId(id) {
   return parseInt(id.charAt(5));
 }
+
+var game = gameMatrix();
 
 $(document).on('ready', function() {
   var move = 1;
@@ -59,13 +61,15 @@ $(document).on('ready', function() {
 
     var self = $(this);
 
-    var col = columnOfId(self.attr('id'));
     var line = lineOfId(self.attr('id'));
+    var col = colOfId(self.attr('id'));
 
+    // set 'O' to 0
     if ( move % 2 === 1) {
       self.html('O');
       game[line][col] = 0;
 
+    // set 'X' to 1
     } else {
       self.html('X');
       game[line][col] = 1;
@@ -73,17 +77,17 @@ $(document).on('ready', function() {
 
     move++;
 
-    function checkWinner(coordinates) {
-      var checkSum = checkSumCoordinates(game, coordinates);
+    function checkWinner(arrayOfCoordinates) {
+      var sum = calculateSumCoordinates(game, arrayOfCoordinates);
       // console.log(checkSum);
 
-      function cellsToGreen(coordinates){
-        var cellName = '#cell' + coordinates[0] + coordinates[1];
+      function cellsToGreen(arrayOfCoordinates){
+        var cellName = '#cell' + arrayOfCoordinates[0] + arrayOfCoordinates[1];
         $(cellName).css('background-color', 'green');
       }
 
-      if ( checkSum === 0 || checkSum === 3 ) {
-        coordinates.forEach(cellsToGreen);
+      if ( sum === 0 || sum === 3 ) {
+        arrayOfCoordinates.forEach(cellsToGreen);
         alert('WE HAVE A WINNER!');
         $('td').off('click')
       }
